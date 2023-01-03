@@ -10,7 +10,7 @@ const Users = require("../models/users");
 //enregistrement nouvel utilisateur
 exports.signup = async (req,res)  => {
     try{
-        let  hash = await bcrypt.hash (req.body.password, 10)
+        let hash = await bcrypt.hash (req.body.password, 10)
         const user = new Users({
             email : req.body.email,
             password : hash
@@ -19,13 +19,11 @@ exports.signup = async (req,res)  => {
         res.status(201).send({message:"Nouvel utilisateur créé"})
     } 
     catch (error) {
-        res.status(500).json({error}).send(console.log(error))
+        res.status(500).json({error}).send(console.error)
     }  
 };
 
-
 //authentification
-
 exports.login = async (req,res) => {
     try{
         let user = await Users.findOne({email:req.body.email})
@@ -33,9 +31,7 @@ exports.login = async (req,res) => {
                 return res.status(400).json({ error : "user not find"})
             }
         // contrôle password
-
         let controlPassword = await bcrypt.compare(req.body.password,user.password)
-            console.log(controlPassword)
             if(!controlPassword){
                 return res.status(401).json({error : "password not valid"})
             }
@@ -53,4 +49,3 @@ exports.login = async (req,res) => {
         console.log(error)
     }
 }
-

@@ -18,8 +18,10 @@ const port = 3000
 const mongoose = require("./mongo/mongo");
 
 const usersRoutes = require("./routes/users")
-
 const saucesRoutes = require("./routes/sauces")
+const sauceRoutes = require("./routes/sauces")
+const idRoutes = require ("./routes/sauces")
+const deleteRoutes = require ("./routes/sauces")
 
 //Middleware
 app.use(cors());
@@ -37,12 +39,19 @@ app.use((req, res, next) => {
 
 
 //Route authentification
-app.use ("/api/auth", usersRoutes) 
+app.use ("/api/auth", usersRoutes)
+
  //Route sauces
-app.use ("/api/sauces",saucesRoutes)
+app.use ("/api",saucesRoutes)
+
+app.use("/api",sauceRoutes)
+
+app.use("/sauces",idRoutes)
+
+app.use("/sauces",deleteRoutes)
 
 app.get("/",(req,res) => res.send("Hello World"))
-app.listen(port, ()=> console.log("listening on port" + port))
+// app.listen(port, ()=> console.log("listening on port" + port))
 
 //export app.js pour les autres fichiers
 module.exports = app;

@@ -2,15 +2,27 @@
 const express = require("express");
 
 //Controllers
-const saucesController= require("../controllers/sauces");
-const createSauces = require ("../controllers/sauces")
+const Sauces= require("../controllers/sauces")
+const Sauce = require("../controllers/sauces")
+const Id = require("../controllers/sauces")
+const Put = require("../controllers/sauces")
+const Delete = require("../controllers/sauces")
+const Like = require("../controllers/sauces")
 
 //fonction Router
 const router = express.Router();
 
-router.get("api/sauces",saucesController.sauces)
+router.post("/sauces",Sauces.createSauces)
 
-router.post("api/sauces",createSauces.sauces)
+router.get("/sauces",Sauce.getSauces)
+
+router.get("/:id",Id.singleSauce)
+
+router.put("/:id,", Put.updateSauce)
+
+router.delete("/:id",Delete.deleteSauce)
+
+router.post("/like",Like.likeSauce)
 
 //transfert module
 module.exports = router;
