@@ -1,51 +1,69 @@
 //import model monDB
-const Sauces = require("../models/sauces")
-const Sauce =require("../models/sauces")
-const Id = require ("../models/sauces")
-const Put = require("../models/sauces")
-const Delete = require("../models/sauces")
-const Like = require("../models/sauces")
+const saucesCtrl = require("../models/sauces")
+// const Sauce =require("../models/sauces")
+// const Id = require ("../models/sauces")
+// const Put = require("../models/sauces")
+// const Delete = require("../models/sauces")
+// const Like = require("../models/sauces")
 
-exports.createSauces = async (req,res) => {
+exports.createSauce = async (req,res,next) => {
     try{ 
-        // res.status(201).send({message:"sauces créées"})
-        const saucesObject = req.body.sauces;
-        const sauces = await new Sauces({
-            ...saucesObject
+        const saucesObject = JSON.parse (req.body.sauces);
+        delete saucesObject._id;
+        delete saucesObject._userId;
+        const sauces = await new sauces ({
+            ...saucesObject,
+            userId : req.auth.userId,
+            imageUrl:
+            `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
         })
-        await sauces.save()
-        res.status(201).send({message:"Nouvelles sauces enregistrées sur la BD"})
+
+        await saucesCtrl.save()
+        res.status(201).json({message:"Nouvelles sauces enregistrées sur la BD"})
     }
      catch (error) {
         res.status(400).json({err})
     }
 }
 
-exports.getSauces = async (req,res) => {
+exports.getSauce = async (req,res,next) => {
     try{
-       await Sauce.find()
+       await saucesCtrl.find()
        res.status(201).json(Sauce)
     }
     catch (error) {
         res.status(400).json({err})
     }
+
 }
 
 exports.singleSauce = async(req,res) => {
     try{
-        await Id.findOne({ _id: req.params.id})
+        await saucesCtrl.findOne({ _id: req.params.id})
         res.status(200).json(Id)
      }
      catch (error) {
-         res.status(404).json({error})
+         res.status(400).json({error})
      }
 }
 
 exports.updateSauce = async (req,res) => {
     try{
-        await Put.updateOne({ _id: req.params.id}, { ...req.body, _id: req.params.id })
-        res.status(200).json({message:'Objet modifié!'})
-     }
+        const saucesObject = req.file ? {
+            ...JSON.parse(req.body.thing),
+            imageUrl:
+            `${req.protoco}://${req.get('host')}/images/${req.file.filename}`
+        } : { ... req.body}
+
+        delete saucesObject._userId;
+        await saucesCtrl.findOne({_id: req.params.id} )
+        if ( sauces.userId != req.auth.userId) {
+            res.status(401).json({ message : 'Not authorized'})
+        } else {
+            await saucesCtrl.updateOne({ _id: req.params.id}, { ...saucesObject, _id: req.params.id })
+            res.status(200).json({message:'Objet modifié!'})
+        }
+    }
      catch (error) {
          res.status(400).json({error})
      }
@@ -53,7 +71,7 @@ exports.updateSauce = async (req,res) => {
 
 exports.deleteSauce = async (req,res) => {
     try{
-        await Delete.deleteOne({ _id: req.params.id })
+        await saucesCtrl.deleteOne({ _id: req.params.id })
         res.status(200).json({message:'Objet supprimé!'})
     }
     catch (error) {

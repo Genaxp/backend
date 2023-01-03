@@ -2,7 +2,9 @@
 const bcrypt = require("bcrypt")
 
 //import jsonwebtoken
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+
+// const users = require("../models/users");
 
 // import données users
 const Users = require("../models/users");
@@ -16,10 +18,10 @@ exports.signup = async (req,res)  => {
             password : hash
         })
         await user.save() 
-        res.status(201).send({message:"Nouvel utilisateur créé"})
+        res.status(201).json({message:"Nouvel utilisateur créé"})
     } 
     catch (error) {
-        res.status(500).json({error}).send(console.error)
+        res.status(400).json({error})
     }  
 };
 
@@ -27,8 +29,9 @@ exports.signup = async (req,res)  => {
 exports.login = async (req,res) => {
     try{
         let user = await Users.findOne({email:req.body.email})
+        
             if(!user){
-                return res.status(400).json({ error : "user not find"})
+                return res.status(401).json({ error : "user not find"})
             }
         // contrôle password
         let controlPassword = await bcrypt.compare(req.body.password,user.password)
@@ -38,14 +41,13 @@ exports.login = async (req,res) => {
             res.status(200).json({ 
                 userId : user._id,
                 token: jwt.sign(
-                    {userId: user._id},
+                    { userId: user._id},
                     `${process.env.JWT_KEY_TOKEN}`,
-                    {expiresIn :"5h"}
+                    { expiresIn :"24h"}
                 )
             })
     }   
     catch (error) {
-        res.status(500).json({error})
-        console.log(error)
+        res.status(400).json({error})
     }
 }

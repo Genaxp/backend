@@ -13,4 +13,4 @@ const usersSchema = mongoose.Schema({
 //création unique adresse email
 usersSchema.plugin(uniqueValidator);
 
-module.exports = mongoose.model("users", usersSchema)
+module.exports = mongoose.model("Users", usersSchema)
