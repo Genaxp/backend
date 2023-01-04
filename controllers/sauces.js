@@ -20,47 +20,51 @@ exports.createSauce = async (req,res,next) => {
     }
 }
 
-// exports.getSauce = async (req,res,next) => {
-//     try{
-//        await SaucesCtrl.find()
-//        res.status(201).json(Sauce)
-//     }
-//     catch (error) {
-//         res.status(400).json({err})
-//     }
-// }
+exports.getSauce = async (req,res,next) => {
+    try{
+       await SaucesCtrl.find()
+       res.status(200).json(Sauce)
+    }
+    catch (error) {
+        res.status(400).json({err})
+    }
+}
 
-// exports.singleSauce = async(req,res) => {
-//     try{
-//         await SaucesCtrl.findOne({ _id: req.params.id})
-//         res.status(200).json(Id)
-//      }
-//      catch (error) {
-//          res.status(400).json({error})
-//      }
-// }
+exports.singleSauce = async(req,res) => {
+    try{
+        await SaucesCtrl.findOne({ _id: req.params.id})
+        res.status(200).json({
+            message:"OK",
+            contenu : {_id : req.params.id}
+        })
+     }
+     catch (error) {
+         res.status(400).json({error})
+     }
+}
 
-// exports.updateSauce = async (req,res) => {
-//     try{
-//         const saucesObject = req.file ? {
-//             ... JSON.parse (req.body.thing),
-//             imageUrl:
-//             `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-//         } : { ... req.body}
+exports.updateSauce = async (req,res) => {
+    
+    try{
+        const saucesObject = req.file ? {
+            ... JSON.parse (req.body.thing),
+            imageUrl:
+            `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        } : { ... req.body}
 
-//         delete saucesObject._userId;
-//         await SaucesCtrl.findOne({_id: req.params.id} )
-//         if ( sauces.userId != req.auth.userId) {
-//             res.status(401).json({ message : 'Not authorized'})
-//         } else {
-//             await SaucesCtrl.updateOne({ _id: req.params.id}, { ...saucesObject, _id: req.params.id })
-//             res.status(200).json({message:'Objet modifié!'})
-//         }
-//     }
-//      catch (error) {
-//          res.status(400).json({error})
-//      }
-// }
+        delete saucesObject._userId;
+        await SaucesCtrl.updateOne({_id: req.params.id} )
+        if ( sauces.userId != req.auth.userId) {
+            res.status(401).json({ message : 'Not authorized'})
+        } else {
+            await SaucesCtrl.updateOne({ _id: req.params.id}, { ...saucesObject, _id: req.params.id })
+            res.status(200).json({message:'Objet modifié!'})
+        }
+    }
+     catch (error) {
+         res.status(400).json({error})
+     }
+}
 
 // exports.deleteSauce = async (req,res) => {
 //     try{
