@@ -1,29 +1,24 @@
 //import express
 const express = require("express");
 
+//création app express
+const app = express();
+const port = 3000
+
 // gérer le CORS
 const cors = require("cors")
 
 const morgan = require("morgan");
 
-// const nodemon = require("nodemon");
-
 const bodyParser = require("body-parser")
 
 // const path =require("path")
-
-//création app express
-const app = express();
-const port = 3000
 
 //import connexion base de données
 const mongoose = require("./mongo/mongo");
 
 const usersRoutes = require("./routes/users")
 const saucesRoutes = require("./routes/sauces")
-const sauceRoutes = require("./routes/sauces")
-const idRoutes = require ("./routes/sauces")
-const deleteRoutes = require ("./routes/sauces")
 
 //Middleware
 app.use(cors());
@@ -44,13 +39,7 @@ app.use((req, res, next) => {
 app.use ("/api/auth", usersRoutes)
 
  //Route sauces
-app.use ("/api",saucesRoutes)
-
-app.use("/api",sauceRoutes)
-
-app.use("/sauces",idRoutes)
-
-app.use("/sauces",deleteRoutes)
+app.use ("/api/sauces",saucesRoutes)
 
 // app.use("/images", express.static(path.join(__dirname,"images")))
 

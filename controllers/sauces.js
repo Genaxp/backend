@@ -16,7 +16,7 @@ exports.createSauce = async (req,res,next) => {
         res.status(201).json({message:"Nouvelles sauces enregistrées sur la BD"})
     }
      catch (error) {
-        res.status(400).json({error})
+        res.status(500).json({error})
     }
 }
 
@@ -26,7 +26,7 @@ exports.getSauce = async (req,res,next) => {
        res.status(200).json(Sauce)
     }
     catch (error) {
-        res.status(400).json({err})
+        res.status(500).json({err})
     }
 }
 
@@ -39,12 +39,11 @@ exports.singleSauce = async(req,res) => {
         })
      }
      catch (error) {
-         res.status(400).json({error})
+         res.status(500).json({error})
      }
 }
 
 exports.updateSauce = async (req,res) => {
-    
     try{
         const saucesObject = req.file ? {
             ... JSON.parse (req.body.thing),
@@ -62,25 +61,25 @@ exports.updateSauce = async (req,res) => {
         }
     }
      catch (error) {
-         res.status(400).json({error})
+         res.status(500).json({error})
      }
 }
 
-// exports.deleteSauce = async (req,res) => {
-//     try{
-//         await SaucesCtrl.deleteOne({ _id: req.params.id })
-//         res.status(200).json({message:'Objet supprimé!'})
-//     }
-//     catch (error) {
-//         res.status(400).json({error})
-//     }
-// }
+exports.deleteSauce = async (req,res) => {
+    try{
+        await SaucesCtrl.deleteOne({ _id: req.params.id })
+        res.status(200).json({message:'Objet supprimé!'})
+    }
+    catch (error) {
+        res.status(500).json({error})
+    }
+}
 
-// exports.likeSauce = async (req,res) => {
-//     try{
-//         res.status(200).json({message:'like/dislike'})
-//     }
-//     catch (error) {
-//         res.status(400).json({error})
-//     }
-// }
+exports.likeSauce = async (req,res) => {
+    try{
+        res.status(200).json({message:'like/dislike'})
+    }
+    catch (error) {
+        res.status(500).json({error})
+    }
+}

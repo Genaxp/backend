@@ -9,6 +9,5 @@ http://localhost:3000/api/auth/signup
 ## se connecter  avec POST
 http://localhost:3000/api/auth/login
 
-
 ## créer une sauce avec POST
 http://localhost:3000/api/sauces
