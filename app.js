@@ -12,7 +12,7 @@ const morgan = require("morgan");
 
 const bodyParser = require("body-parser")
 
-// const path =require("path")
+const path =require("path")
 
 //import connexion base de données
 const mongoose = require("./mongo/mongo");
@@ -41,7 +41,6 @@ app.use ("/api/auth", usersRoutes)
  //Route sauces
 app.use ("/api/sauces",saucesRoutes)
 
-// app.use("/images", express.static(path.join(__dirname,"images")))
-
+app.use("/images", express.static(path.join(__dirname,"images")))
 //export app.js pour les autres fichiers
 module.exports = app;
