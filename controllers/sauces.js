@@ -2,15 +2,18 @@
 const SaucesCtrl = require("../models/sauces")
 
 exports.createSauce = async (req,res) => {
+  
     try{ 
-        const saucesObject =(req.body.sauces);
-        delete saucesObject._id;
-        delete saucesObject._userId;
-        const saucesCtrl = await new SaucesCtrl ({
+        const saucesObject = req.body.sauces;
+        console.log(req.body.sauces)
+        // delete saucesObject._id;
+        // delete saucesObject._userId;
+    
+        const saucesCtrl = new SaucesCtrl ({
             ...saucesObject
-            , userId : req.auth.userId,
-            imageUrl:
-            `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+            // ,userId : req.auth.userId,
+            // imageUrl:
+            // `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
         })
         await saucesCtrl.save()
         res.status(201).json({message:"Nouvelles sauces enregistrées sur la BD"})
@@ -52,7 +55,7 @@ exports.updateSauce = async (req,res) => {
         } : { ... req.body}
 
         delete saucesObject._userId;
-        await SaucesCtrl.updateOne({_id: req.params.id} )
+        await SaucesCtrl.findOne({_id: req.params.id} )
         if ( sauces.userId != req.auth.userId) {
             res.status(401).json({ message : 'Not authorized'})
         } else {
