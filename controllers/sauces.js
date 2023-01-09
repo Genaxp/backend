@@ -23,23 +23,23 @@ exports.createSauce = async (req,res) => {
     }
 }
 
+
 exports.getSauce = async (req,res,next) => {
     try{
-       await SaucesCtrl.find()
-       res.status(200).json(SaucesCtrl)
+        console.log(SaucesCtrl)
+        let AllSaucesCtrl = await SaucesCtrl.find()
+        res.status(200).json(AllSaucesCtrl)
     }
     catch (error) {
         res.status(500).json({err})
     }
 }
 
-exports.singleSauce = async(req,res) => {
+exports.singleSauce = async (req,res,next) => {
+    console.log({_id : req.params.id})
     try{
-        await SaucesCtrl.findOne({ _id: req.params.id})
-        res.status(200).json({
-            message:"OK",
-            contenu : {_id : req.params.id}
-        })
+        let One = await SaucesCtrl.findOne({ _id: req.params.id})
+        res.status(200).json(One)
      }
      catch (error) {
          res.status(500).json({error})
