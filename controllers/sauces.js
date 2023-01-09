@@ -23,7 +23,6 @@ exports.createSauce = async (req,res) => {
     }
 }
 
-
 exports.getSauce = async (req,res,next) => {
     try{
         console.log(SaucesCtrl)
@@ -47,21 +46,24 @@ exports.singleSauce = async (req,res,next) => {
 }
 
 exports.updateSauce = async (req,res) => {
+    console.log({_id : req.params.id})
+    console.log({...req.body}) 
     try{
-        const saucesObject = req.file ? {
-            ...JSON.parse(req.body.thing),
-            imageUrl:
-            `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-        } : { ... req.body}
+        // const saucesObject = req.file ? {
+        //     ...JSON.parse(req.body.thing),
+        //     imageUrl:
+        //     `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        // } : { ... req.body}
 
-        delete saucesObject._userId;
-        await SaucesCtrl.findOne({_id: req.params.id} )
-        if ( sauces.userId != req.auth.userId) {
-            res.status(401).json({ message : 'Not authorized'})
-        } else {
-            await SaucesCtrl.updateOne({ _id: req.params.id}, { ...saucesObject, _id: req.params.id })
-            res.status(200).json({message:'Objet modifié!'})
-        }
+        // delete saucesObject._userId;
+        // await SaucesCtrl.findOne({_id: req.params.id} )
+        // if ( sauces.userId != req.auth.userId) {
+        //     res.status(401).json({ message : 'Not authorized'})
+        // } else {
+       let updated = await SaucesCtrl.updateOne({ _id: req.params.id} , {...req.body,_id: req.params.id}) // {saucesObject, _id: req.params.id })
+       console.log(updated) 
+       res.status(200).json({message:'Objet modifié!'})
+        // }   
     }
      catch (error) {
          res.status(500).json({error})
@@ -69,8 +71,11 @@ exports.updateSauce = async (req,res) => {
 }
 
 exports.deleteSauce = async (req,res) => {
+    console.log({_id : req.params.id})
+    console.log({...req.body}) 
     try{
-        await SaucesCtrl.deleteOne({ _id: req.params.id })
+        let deleted = await SaucesCtrl.deleteOne({ _id: req.params.id })
+        console.log(deleted)
         res.status(200).json({message:'Objet supprimé!'})
     }
     catch (error) {
