@@ -12,7 +12,7 @@ router.get("/", auth, saucesCtrl.getSauce)
 router.get("/:id", auth, saucesCtrl.singleSauce)
 router.put("/:id", auth, multer, saucesCtrl.updateSauce)
 router.delete("/:id", auth, saucesCtrl.deleteSauce)
-router.post("/like", auth, saucesCtrl.likeSauce)
+router.post("/:id/like", auth, saucesCtrl.likeSauce)
 
 //transfert module
 module.exports = router;

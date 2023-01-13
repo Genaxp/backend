@@ -3,29 +3,24 @@ const SaucesCtrl = require("../models/sauces")
 
 exports.createSauce = async (req,res) => { 
     try{ 
-        const saucesObject = req.body.sauces
-        // delete saucesObject._id;
-        // delete saucesObject._userId;
+        const saucesObject = JSON.parse(req.body.sauces)
+        console.log(saucesObject)
+        delete saucesObject._id
     
         const saucesCtrl = await new SaucesCtrl ({
-            // ...saucesObject
-            // ,userId : req.auth.userId,
-            // imageUrl:
-            // `${req.protocol}://${req.get(`host`)}/images/${req.file.filename}`
+            ...saucesObject,
+            imageUrl:
+            `${req.protocol}://${req.get(`host`)}/images/${req.file.filename}`
         })
-        
         await saucesCtrl.save()
-        res.status(201).json({message:"Nouvelles sauces enregistrées sur la BD"})
-
-        console.log(saucesCtrl)
+        res.status(201).json({message:"Sauces enregistrées sur la BD"})
     }
-  
      catch (error) {
         res.status(500).json({error})
     }
 }
 
-exports.getSauce = async (req,res,next) => {
+exports.getSauce = async (req,res) => {
     try{
         console.log(SaucesCtrl)
         let AllSaucesCtrl = await SaucesCtrl.find()
@@ -36,7 +31,7 @@ exports.getSauce = async (req,res,next) => {
     }
 }
 
-exports.singleSauce = async (req,res,next) => {
+exports.singleSauce = async (req,res) => {
     console.log({_id : req.params.id})
     try{
         let One = await SaucesCtrl.findOne({ _id: req.params.id})
@@ -50,12 +45,11 @@ exports.singleSauce = async (req,res,next) => {
 exports.updateSauce = async (req,res) => {
     try{
         const saucesObject = await req.file ? {
-            ...JSON.parse(req.body.thing),
+            ...JSON.parse(req.body.sauces),
             imageUrl:
             `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
         } : { ... req.body}
 
-        delete saucesObject._userId
         await SaucesCtrl.findOne({_id: req.params.id} )
         if ( sauces.userId != req.auth.userId) {
             res.status(400).json({ message : 'Not authorized'})
@@ -82,11 +76,30 @@ exports.deleteSauce = async (req,res) => {
     }
 }
 
-exports.likeSauce = async (req,res) => {
+exports.likeSauce =(req,res) => {
     try{
-        res.status(200).json({message:'like/dislike'})
-    }
+        if (req.body.like === 1){
+            SaucesCtrl.updateOne (
+                {_id: req.params.id},
+                {
+                    $inc :{ likes : req.body.like++},
+                    $push: { usersLiked : req.body.userId},
+                }
+            ) 
+            res.status(200).json({message: "1 like"})
+        } 
+        else if (req.body.like === -1) {
+            SaucesCtrl.updateOne (
+                {_id: req.params.id},
+                {
+                    $inc :{ dislikes : req.body.like++ * -1},
+                    $push: { usersLiked : req.body.userId},
+                }
+            ) 
+            res.status(200).json({message: "1 dislike"})
+        }
+    } 
     catch (error) {
         res.status(500).json({error})
-    }
+    }  
 }

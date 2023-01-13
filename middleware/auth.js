@@ -1,32 +1,30 @@
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken')
+const dotenv = require("dotenv")
  
 module.exports = async (req, res,next) => {
    try {
-        const token = await  req.headers.authorization.split(' ')[1];
+        const token =  req.headers.authorization.split(" ")[1];
         const decodedToken = jwt.verify(token, process.env.JWT_KEY_TOKEN);
-        const userId = await decodedToken.userId;
-
-        userIdParams = req.originalUrl.split("=")[1];
-        if (req.body === true){
-            if ( req._body.userId === decodedToken)
-            next()
-        } else {
-            throw "erreur authentification"
-        }
-
-
-        }
-        
-
-
-
-        // req.auth = {
-        // userId : userId
-        // }
-        // next()
-   
+        const userIdDecoded = await decodedToken.userId;
     
-    catch(error) {
-        res.status(500).json({ error });
+        userIdParams = req.originalUrl.split("=")[1]
+  
+        if (req._body === true){
+            if ( req.body.userId === userIdDecoded){
+            next()
+            } else {
+                throw "erreur identification userID"
+            } 
+        } else if(userIdParams === userIdDecoded){
+            next()
+        } else{
+            throw "erreur identification frm data"
+        }
+ 
+    } catch(error) {
+        res.status(500).json({
+            message :"Echec authentification" ,
+            error : error })
     }
 }
+ 

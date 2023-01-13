@@ -9,9 +9,9 @@ const Schema = mongoose.Schema({
     description : { type :String , required : true },
     mainPepper : { type :String , required : true },
     imageUrl : { type :String , required : true },
-    heat : { type :Number },
-    likes : { type :Number},
-    dislikes : {type : Number},
+    heat : { type :Number,required : true },
+    likes : { type :Number , required : true },
+    dislikes : {type : Number, required : true },
     usersLiked : [ String ],
     usersDisliked :[ String ] 
 });
