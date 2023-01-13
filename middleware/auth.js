@@ -9,13 +9,9 @@ module.exports = async (req, res,next) => {
         req.auth = {
             userId: userIdDecoded
         }
-
         next()
-
     } catch(error) {
-        res.status(301).json({
-            message :"Echec authentification" ,
-            error : error })
+        res.status(301).json({message :"Echec authentification"})
     }
 }
  
