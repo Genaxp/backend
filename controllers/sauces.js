@@ -3,15 +3,12 @@ const SaucesCtrl = require("../models/sauces")
 
 exports.createSauce = async (req,res) => { 
     try{ 
-        const saucesObject = JSON.parse(req.body.sauces)
-        console.log(saucesObject)
-        delete saucesObject._id
-    
-        const saucesCtrl = await new SaucesCtrl ({
-            ...saucesObject,
-            imageUrl:
-            `${req.protocol}://${req.get(`host`)}/images/${req.file.filename}`
-        })
+        
+        const saucesObject = JSON.parse(req.body.sauce)
+        saucesObject.imageUrl = `${req.protocol}://${req.get(`host`)}/images/${req.file.filename}`
+        saucesObject.likes = 0
+        saucesObject.dislikes = 0
+        const saucesCtrl = new SaucesCtrl (saucesObject)
         await saucesCtrl.save()
         res.status(201).json({message:"Sauces enregistrées sur la BD"})
     }
@@ -22,8 +19,7 @@ exports.createSauce = async (req,res) => {
 
 exports.getSauce = async (req,res) => {
     try{
-        console.log(SaucesCtrl)
-        let AllSaucesCtrl = await SaucesCtrl.find()
+        let AllSaucesCtrl = await SaucesCtrl.find({})
         res.status(200).json(AllSaucesCtrl)
     }
     catch (error) {
@@ -64,8 +60,6 @@ exports.updateSauce = async (req,res) => {
 }
 
 exports.deleteSauce = async (req,res) => {
-    console.log({_id : req.params.id})
-    console.log({...req.body}) 
     try{
         let deleted = await SaucesCtrl.deleteOne({ _id: req.params.id })
         console.log(deleted)

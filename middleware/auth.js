@@ -6,23 +6,14 @@ module.exports = async (req, res,next) => {
         const token =  req.headers.authorization.split(" ")[1];
         const decodedToken = jwt.verify(token, process.env.JWT_KEY_TOKEN);
         const userIdDecoded = await decodedToken.userId;
-    
-        userIdParams = req.originalUrl.split("=")[1]
-  
-        if (req._body === true){
-            if ( req.body.userId === userIdDecoded){
-            next()
-            } else {
-                throw "erreur identification userID"
-            } 
-        } else if(userIdParams === userIdDecoded){
-            next()
-        } else{
-            throw "erreur identification frm data"
+        req.auth = {
+            userId: userIdDecoded
         }
- 
+
+        next()
+
     } catch(error) {
-        res.status(500).json({
+        res.status(301).json({
             message :"Echec authentification" ,
             error : error })
     }

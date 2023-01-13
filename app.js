@@ -6,7 +6,7 @@ const app = express();
 const port = 3000
 
 // gérer le CORS
-const cors = require("cors")
+// const cors = require("cors")
 
 const morgan = require("morgan");
 
@@ -21,11 +21,11 @@ const usersRoutes = require("./routes/users")
 const saucesRoutes = require("./routes/sauces")
 
 //Middleware
-app.use(cors());
+// app.use(cors());
 
 app.use(morgan("dev"));
 
-app.use(bodyParser.json());  // changement du body en JSON
+app.use(express.json());  // changement du body en JSON
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
