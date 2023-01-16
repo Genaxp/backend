@@ -1,7 +1,8 @@
 //import model monDB
+const sauces = require("../models/sauces")
 const SaucesCtrl = require("../models/sauces")
 
-exports.createSauce = async (req,res) => { 
+exports.createSauce = async (req,res,next) => { 
     try{ 
         const saucesObject = JSON.parse(req.body.sauce)
         saucesObject.imageUrl = `${req.protocol}://${req.get(`host`)}/images/${req.file.filename}`
@@ -28,7 +29,6 @@ exports.getSauce = async (req,res) => {
 }
 
 exports.singleSauce = async (req,res) => {
-    console.log({_id : req.params.id})
     try{
         let One = await SaucesCtrl.findOne({ _id: req.params.id})
         res.status(200).json(One)
@@ -43,8 +43,6 @@ exports.updateSauce = (req,res) => {
         ...JSON.parse(req.body.sauce),
         imageUrl:`${req.protocol}://${req.get('host')}/images/${req.file.filename}`
         } : { ...req.body}
-
-    console.log(req.file)
 
     SaucesCtrl.updateOne({ _id: req.params.id} , {...saucesObject, _id: req.params.id })
         .then (() => res.status(200).json({message:'Objet modifié!'}))  
@@ -62,20 +60,20 @@ exports.deleteSauce = async (req,res) => {
     }
 }
 
-exports.likeSauce = (req,res) => {
-    try{
+exports.likeSauce = async (req,res,next) => {
+    try{ 
         if (req.body.like === 1){
-            SaucesCtrl.updateOne (
+            await SaucesCtrl.updateOne (
                 {_id: req.params.id},
                 {
-                    $inc :{ likes : req.body.like++},
+                    $inc :{ likes : req.body.like++ },
                     $push: { usersLiked : req.body.userId},
                 }
             ) 
             res.status(200).json({message: "1 like"})
-        } 
-        else if (req.body.like === -1) {
-            SaucesCtrl.updateOne (
+
+        }  else if (req.body.like === -1) {
+            await SaucesCtrl.updateOne (
                 {_id: req.params.id},
                 {
                     $inc :{ dislikes : (req.body.like++) * -1},
@@ -84,17 +82,28 @@ exports.likeSauce = (req,res) => {
             ) 
             res.status(200).json({message: "1 dislike"})
         } else {
-            SaucesCtrl.findOne({_id:req.params.id})
-            if (sauce.usersLiked.includes(req.body.userId )){
-                SaucesCtrl.updateOne(
+            await SaucesCtrl.findOne({_id:req.params.id})
+
+            if (sauces.usersLiked.includes(req.body.userId )){
+                await SaucesCtrl.updateOne(
                     {_id: req.params.id},
                     {
                         $pull: { usersLiked:req.body.userId},
-                        $inc: { likes: -1}})
-            }else if (sauce.usersDisliked.includes(req.body.userId)){
-                SaucesCtrl.updateOne({ _id : req.params.id},
-                    { $pull: { usersDisliked: req.body.userId}, $inc: { dislikes: -1}}
+                        $inc: { like: -1}
+                    }
                 )
+                console.log(SaucesCtrl)
+                console.log(sauces.usersDisliked)
+            res.status(200).json({message: "1 like retiré"})
+                
+            } else if (sauces.usersDisliked.includes(req.body.userId)){
+                await SaucesCtrl.updateOne(
+                    { _id : req.params.id},
+                    { $pull: { usersDisliked: req.body.userId},
+                      $inc: { dislikes: -1}
+                    }
+                )
+                res.status(200).json({message: "1 dislike retiré"})
             }
         }
     } 
