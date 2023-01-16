@@ -3,12 +3,12 @@ const SaucesCtrl = require("../models/sauces")
 
 exports.createSauce = async (req,res) => { 
     try{ 
-        
         const saucesObject = JSON.parse(req.body.sauce)
         saucesObject.imageUrl = `${req.protocol}://${req.get(`host`)}/images/${req.file.filename}`
         saucesObject.likes = 0
         saucesObject.dislikes = 0
         const saucesCtrl = new SaucesCtrl (saucesObject)
+
         await saucesCtrl.save()
         res.status(201).json({message:"Sauces enregistrées sur la BD"})
     }
@@ -38,25 +38,17 @@ exports.singleSauce = async (req,res) => {
      }
 }
 
-exports.updateSauce = async (req,res) => {
-    try{
-        const saucesObject = await req.file ? {
-            ...JSON.parse(req.body.sauces),
-            imageUrl:
-            `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-        } : { ... req.body}
+exports.updateSauce = (req,res) => {
+    const saucesObject = req.file ? {
+        ...JSON.parse(req.body.sauce),
+        imageUrl:`${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        } : { ...req.body}
 
-        await SaucesCtrl.findOne({_id: req.params.id} )
-        if ( sauces.userId != req.auth.userId) {
-            res.status(400).json({ message : 'Not authorized'})
-        } else {
-       await SaucesCtrl.updateOne({ _id: req.params.id} , {...saucesObject, _id: req.params.id })
-       res.status(200).json({message:'Objet modifié!'})
-        }   
-    }
-     catch (error) {
-         res.status(500).json({error})
-     }
+    console.log(req.file)
+
+    SaucesCtrl.updateOne({ _id: req.params.id} , {...saucesObject, _id: req.params.id })
+        .then (() => res.status(200).json({message:'Objet modifié!'}))  
+        .catch(error =>res.status(400).json({error}))
 }
 
 exports.deleteSauce = async (req,res) => {
@@ -70,7 +62,7 @@ exports.deleteSauce = async (req,res) => {
     }
 }
 
-exports.likeSauce =(req,res) => {
+exports.likeSauce = (req,res) => {
     try{
         if (req.body.like === 1){
             SaucesCtrl.updateOne (
@@ -86,11 +78,24 @@ exports.likeSauce =(req,res) => {
             SaucesCtrl.updateOne (
                 {_id: req.params.id},
                 {
-                    $inc :{ dislikes : req.body.like++ * -1},
-                    $push: { usersLiked : req.body.userId},
+                    $inc :{ dislikes : (req.body.like++) * -1},
+                    $push: { usersDisliked : req.body.userId},
                 }
             ) 
             res.status(200).json({message: "1 dislike"})
+        } else {
+            SaucesCtrl.findOne({_id:req.params.id})
+            if (sauce.usersLiked.includes(req.body.userId )){
+                SaucesCtrl.updateOne(
+                    {_id: req.params.id},
+                    {
+                        $pull: { usersLiked:req.body.userId},
+                        $inc: { likes: -1}})
+            }else if (sauce.usersDisliked.includes(req.body.userId)){
+                SaucesCtrl.updateOne({ _id : req.params.id},
+                    { $pull: { usersDisliked: req.body.userId}, $inc: { dislikes: -1}}
+                )
+            }
         }
     } 
     catch (error) {
