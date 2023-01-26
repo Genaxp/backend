@@ -11,7 +11,7 @@ module.exports = async (req, res,next) => {
         }
         next()
     } catch(error) {
-        res.status(301).json({message :"Echec authentification"})
+        res.status(401).json({message :"Echec authentification"})
     }
 }
  

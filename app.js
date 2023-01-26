@@ -23,7 +23,7 @@ app.use(express.json());  // changement du body en JSON
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   next();
 });
 
@@ -35,6 +35,11 @@ app.use ("/api/auth", usersRoutes)
 
  //Route sauces
 app.use ("/api/sauces",saucesRoutes)
+
+app.use(({res}) => {
+  const message = "Impossible de trouver la ressource demandée"
+  res.status(404).json({message})
+})
 
 //export app.js pour les autres fichiers
 module.exports = app;
