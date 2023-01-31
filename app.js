@@ -4,7 +4,6 @@ const express = require("express");
 const app = express();
 const port = 3000
 
-
 const morgan = require("morgan");
 const bodyParser = require("body-parser")
 const path =require("path")
@@ -18,7 +17,6 @@ const saucesRoutes = require("./routes/sauces")
 app.use(morgan("dev"));
 
 app.use(express.json());  // changement du body en JSON
-
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');

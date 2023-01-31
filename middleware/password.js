@@ -14,7 +14,7 @@ passwordValidatorSchema
 module.exports = (req,res,next) => {
     if(passwordValidatorSchema.validate(req.body.password)){
         next()
-    }else {
+    } else {
         return res.status(400).json({ error :`Mot de passe non sécurisé`})
     }
 }

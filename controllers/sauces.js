@@ -13,7 +13,7 @@ exports.createSauce = async (req,res,next) => {
         await sauce.save()
         res.status(201).json({message:"Sauces enregistrées sur la BD"})
     }
-     catch (error) {
+    catch (error) {
         res.status(500).json({error})
     }
 }
@@ -22,8 +22,7 @@ exports.getSauce = async (req,res,next) => {
     try{
         let AllSaucesCtrl = await saucesCtrl.find({})
         console.log(AllSaucesCtrl)
-        res.status(200).json(AllSaucesCtrl)
-        
+        res.status(200).json(AllSaucesCtrl)    
     }
     catch (error) {
         res.status(500).json({error})
@@ -40,7 +39,7 @@ exports.singleSauce = async (req,res,next) => {
         res.status(200).json(One)
     }  
     catch (error) {
-         res.status(500).json({error})
+        res.status(500).json({error})
     }
 }
 
@@ -50,37 +49,37 @@ exports.updateSauce = async (req,res,next) => {
             ? {
                 ...JSON.parse(req.body.sauce),
                 imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-            } : { ...req.body };
+            }
+            : { ...req.body }
           
-            delete saucesObject._userId;
-            const sauce = await saucesCtrl.findOne({_id: req.params.id})
-                if (sauce) {
-                    if(req.file) {
-                        const filename = './images/' + sauce.imageUrl.split('/').pop()
-                        if(fs.existsSync(filename))
-                            fs.unlinkSync(filename)
-                    }        
-                    if (sauce.userId != req.auth.userId) {
-                        res.status(401).json({ message : 'Not authorized'});
-                        if (sauce === null) {
-                            const messages = "La sauce n'a pas été trouvé"
-                            return res.status(404).json(messages) 
-                        }   
-                    } else {
-                        await saucesCtrl.updateOne({ _id: req.params.id}, { ...saucesObject, _id: req.params.id})
-                        res.status(200).json({message : 'Objet modifié!'})
-                    }
-                }        
+        delete saucesObject._userId
+        const sauce = await saucesCtrl.findOne({_id: req.params.id})
+        if (sauce === null) {
+            const messages = "La sauce n'a pas été trouvé"
+            return res.status(404).json(messages) 
+        }   
+        else {        
+            if (sauce.userId != req.auth.userId) {
+                res.status(401).json({ message : 'Not authorized'}) 
+            } else {
+                if(req.file) {
+                    const filename = './images/' + sauce.imageUrl.split('/').pop()
+                    if(fs.existsSync(filename))
+                        fs.unlinkSync(filename)
+                } 
+                await saucesCtrl.updateOne({ _id: req.params.id}, { ...saucesObject, _id: req.params.id})
+                res.status(200).json({message : 'Objet modifié!'})
+            }
+        }        
     }
     catch (error) {
-            res.status(500).json({error})
+        res.status(500).json({error})
     }
 }
 
 exports.deleteSauce = async (req,res,next) => {
     try{       
         let deleted = await saucesCtrl.findOne({ _id: req.params.id })
-
         if (deleted === null ) {
             const messages = "La sauce n'a pas été trouvé"
             return res.status(404).json({messages})    
@@ -91,25 +90,22 @@ exports.deleteSauce = async (req,res,next) => {
             const filename = './images/'+ deleted.imageUrl.split('/').pop()
             if(fs.existsSync(filename))
                 fs.unlinkSync(filename)
-            
             await saucesCtrl.deleteOne({_id: req.params.id})                  
             const message = "la sauce a bien été supprimée"
             res.status(200).json({deleted, data : message})      
-            
         }
-    }catch (error) {
+    } catch (error) {
         res.status(500).json({error})
     }
 }
 
 exports.likeSauce = async (req,res,next) => {
     try{ 
-       
         if (req.body.like === 1){
             await saucesCtrl.updateOne (
                 {_id: req.params.id},
                 {
-                    $inc :{ likes : req.body.like++ },
+                    $inc :{ likes : 1 },
                     $push: { usersLiked : req.body.userId},
                 }
             ) 
@@ -118,7 +114,7 @@ exports.likeSauce = async (req,res,next) => {
             await saucesCtrl.updateOne (
                 {_id: req.params.id},
                 {
-                    $inc :{ dislikes : (req.body.like++) * -1},
+                    $inc :{ dislikes : 1},
                     $push: { usersDisliked : req.body.userId},
                 }
             ) 
